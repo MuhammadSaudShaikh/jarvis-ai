@@ -2,37 +2,34 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const express = require("express");
+const path = require("path");
 const app = express();
 
 // Middleware
 app.use(express.json());
 
-// Import database (auto-creates tables)
+// Serve static files from 'public' folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Import database
 require("./config/db");
 
 // Routes
 const chatRoute = require("./routes/chat");
 const authRoute = require("./routes/auth");
 
-// API endpoints
+// API routes
 app.use("/chat", chatRoute);
 app.use("/auth", authRoute);
 
-// Home route
-app.get("/", (req, res) => {
+// API home route
+app.get("/api", (req, res) => {
   res.json({ 
     status: "Jarvis is running",
     version: "2.0.0",
     database: "SQLite",
     ai: "Groq (LLaMA 3.3 70B)",
-    auth: "JWT Enabled",
-    endpoints: {
-      register: "POST /auth/register",
-      login: "POST /auth/login",
-      chat: "POST /chat (requires token)",
-      history: "GET /chat/history (requires token)",
-      clearHistory: "DELETE /chat/history (requires token)"
-    }
+    auth: "JWT Enabled"
   });
 });
 
@@ -41,17 +38,25 @@ app.get("/health", (req, res) => {
   res.json({ status: "OK", timestamp: new Date().toISOString() });
 });
 
-// Start server
+// Catch-all route for frontend (SPA support)
+// Express 5.x compatible way
+app.get(/.*/, (req, res) => {
+  // Skip API routes that were already handled
+  if (req.path.startsWith('/api') || 
+      req.path.startsWith('/chat') || 
+      req.path.startsWith('/auth') ||
+      req.path === '/health') {
+    return res.status(404).json({ error: 'Not found' });
+  }
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`\n🚀 Jarvis server running on http://localhost:${PORT}`);
-  console.log(`\n📡 Available Endpoints:`);
-  console.log(`   POST   /auth/register  - Create new account`);
-  console.log(`   POST   /auth/login     - Login to account`);
-  console.log(`   POST   /chat           - Send message (Bearer token required)`);
-  console.log(`   GET    /chat/history   - Get chat history (Bearer token required)`);
-  console.log(`   DELETE /chat/history   - Clear history (Bearer token required)`);
-  console.log(`   GET    /health         - Health check`);
-  console.log(`\n✅ Server ready!\n`);
+  console.log(`🌐 Frontend: http://localhost:${PORT}`);
+  console.log(`📡 API Base: http://localhost:${PORT}/api`);
+  console.log(`🔐 Auth: http://localhost:${PORT}/auth`);
+  console.log(`💬 Chat: http://localhost:${PORT}/chat`);
 });
 

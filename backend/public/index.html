@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarvis AI - Chat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Header -->
+        <div class="chat-header">
+            <div class="header-left">
+                <h2>JARVIS</h2>
+                <span id="userName" class="user-badge"></span>
+            </div>
+            <div class="header-right">
+                <button id="clearHistoryBtn" class="btn-icon" title="Clear History">Clean</button>
+                <button id="logoutBtn" class="btn-icon" title="Logout">logout</button>
+            </div>
+        </div>
+        
+        <!-- Messages Area -->
+        <div id="messagesArea" class="messages-area">
+            <div class="welcome-message">
+                <div class="welcome-icon"><a href="https://www.flaticon.com/free-icons/ironman" title="ironman icons">Ironman icons created by amoghdesign - Flaticon</a></div>
+                <h3>Welcome to Jarvis!</h3>
+                <p>Your personal AI assistant. Ask me anything!</p>
+                <p style="font-size: 12px; margin-top: 10px;">💡 Try: "Mera naam kya hai?" — I remember our conversation</p>
+            </div>
+        </div>
+        
+        <!-- Input Area -->
+        <div class="input-area">
+            <textarea id="messageInput" placeholder="Type your message here..." rows="1"></textarea>
+            <button id="sendBtn" class="btn-send">📤 Send</button>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarvis AI - Sign Up</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="logo">
+                <h1>JARVIS</h1>
+                <p>Your Personal AI Assistant</p>
+            </div>
+            
+            <div class="form-container">
+                <h2>Create New Account</h2>
+                
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Choose a username">
+                </div>
+                
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Minimum 4 characters">
+                </div>
+                
+                <div id="errorMsg" class="error-msg hidden"></div>
+                <div id="successMsg" class="success-msg hidden"></div>
+                
+                <button id="signupBtn" class="btn-primary">Sign Up</button>
+                
+                <p class="footer-text">
+                    Already have an account? 
+                    <a href="login.html">Login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('signupBtn').addEventListener('click', async () => {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+            const successMsg = document.getElementById('successMsg');
+            
+            errorMsg.classList.add('hidden');
+            successMsg.classList.add('hidden');
+            
+            if (!username || !password) {
+                errorMsg.textContent = 'Please enter username and password';
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+            
+            if (password.length < 4) {
+                errorMsg.textContent = 'Password must be at least 4 characters';
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    successMsg.textContent = 'Account created successfully! Redirecting to login...';
+                    successMsg.classList.remove('hidden');
+                    
+                    // Auto login after signup
+                    localStorage.setItem('jarvis_token', data.token);
+                    localStorage.setItem('jarvis_user', data.user.username);
+                    
+                    setTimeout(() => {
+                        window.location.href = '/index.html';
+                    }, 1500);
+                } else {
+                    errorMsg.textContent = data.error || 'Signup failed';
+                    errorMsg.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorMsg.textContent = 'Network error. Is server running?';
+                errorMsg.classList.remove('hidden');
+            }
+        });
+        
+        document.getElementById('password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') document.getElementById('signupBtn').click();
+        });
+    </script>
+</body>
+</html>
