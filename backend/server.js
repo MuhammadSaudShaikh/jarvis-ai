@@ -54,3 +54,4 @@ app.listen(PORT, () => {
   console.log(`   GET    /health         - Health check`);
   console.log(`\n✅ Server ready!\n`);
 });
+
